@@ -1,0 +1,118 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-border);
+}
+
+.login-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0;
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: var(--color-text-sec);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.login-error {
+  padding: 12px;
+  background-color: rgba(255, 77, 77, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: 8px;
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  color: var(--color-text-sec);
+  font-weight: 500;
+}
+
+.form-input {
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background-color: var(--color-surface-3);
+  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+}
+
+.form-input::placeholder {
+  color: var(--color-border);
+}
+
+.login-btn {
+  margin-top: 12px;
+  padding: 14px;
+  font-weight: 600;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.login-toggle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-sec);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.toggle-btn {
+  color: var(--color-primary-light);
+  padding: 4px;
+  font-weight: 500;
+}
+
+.toggle-btn:hover {
+  text-decoration: underline;
+  background: transparent;
+}

@@ -1,0 +1,89 @@
+/* ===== Coding-Themed Interactive Background ===== */
+
+.code-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Matrix rain canvas fills the full viewport */
+.code-bg__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Glowing orb that follows the cursor */
+.code-bg__cursor-orb {
+  position: fixed;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(79, 142, 255, 0.05) 0%,
+    rgba(0, 212, 170, 0.02) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  /* No CSS transition — position updated every rAF frame */
+}
+
+/* Token layer sits above the canvas */
+.code-bg__tokens {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Individual floating code token */
+.code-bg__token {
+  position: absolute;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  /* will-change set inline so it's applied per-element */
+  will-change: transform;
+  /* Glow matching the token color */
+  text-shadow:
+    0 0 8px currentColor,
+    0 0 16px currentColor;
+  /* Fade-in on mount so tokens don't pop in */
+  animation: tokenFadeIn 1.2s ease both;
+}
+
+/* Stagger the fade-in for each token via nth-child */
+.code-bg__token:nth-child(1)  { animation-delay: 0.00s; }
+.code-bg__token:nth-child(2)  { animation-delay: 0.04s; }
+.code-bg__token:nth-child(3)  { animation-delay: 0.08s; }
+.code-bg__token:nth-child(4)  { animation-delay: 0.12s; }
+.code-bg__token:nth-child(5)  { animation-delay: 0.16s; }
+.code-bg__token:nth-child(6)  { animation-delay: 0.20s; }
+.code-bg__token:nth-child(7)  { animation-delay: 0.24s; }
+.code-bg__token:nth-child(8)  { animation-delay: 0.28s; }
+.code-bg__token:nth-child(9)  { animation-delay: 0.32s; }
+.code-bg__token:nth-child(10) { animation-delay: 0.36s; }
+.code-bg__token:nth-child(11) { animation-delay: 0.40s; }
+.code-bg__token:nth-child(12) { animation-delay: 0.44s; }
+.code-bg__token:nth-child(13) { animation-delay: 0.48s; }
+.code-bg__token:nth-child(14) { animation-delay: 0.52s; }
+.code-bg__token:nth-child(15) { animation-delay: 0.56s; }
+.code-bg__token:nth-child(16) { animation-delay: 0.60s; }
+.code-bg__token:nth-child(17) { animation-delay: 0.64s; }
+.code-bg__token:nth-child(18) { animation-delay: 0.68s; }
+.code-bg__token:nth-child(n+19) { animation-delay: 0.72s; }
+
+@keyframes tokenFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; } /* final opacity controlled by inline style */
+}

@@ -1,0 +1,50 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.layout__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  position: relative;
+}
+
+.layout__content {
+  flex: 1;
+  overflow-y: auto;
+  background: transparent;
+  position: relative;
+}
+
+/* Subtle dot-grid texture on the content area */
+.layout__content::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(79, 142, 255, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+  animation: fadeIn 1s ease both;
+}
+
+.layout__backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .layout__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    animation: fadeIn 0.2s ease both;
+  }
+}

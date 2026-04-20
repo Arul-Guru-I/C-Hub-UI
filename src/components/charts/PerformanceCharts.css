@@ -1,0 +1,114 @@
+.perf-charts {
+  margin-bottom: 32px;
+}
+
+.perf-charts__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.perf-charts__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.perf-charts__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.perf-charts__pill {
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+/* 2-col grid by default, expands to 4-col when rubric data is present */
+.perf-charts__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.perf-charts__grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.perf-charts__grid--4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 1200px) {
+  .perf-charts__grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .perf-charts__grid--2,
+  .perf-charts__grid--4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Chart Card ── */
+.chart-card {
+  padding: 20px 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-card__header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.chart-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.chart-card__sub {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+/* ── Custom Tooltip ── */
+.chart-tooltip {
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+.chart-tooltip__label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chart-tooltip__item {
+  margin: 2px 0;
+  font-size: 12px;
+}
+
+.chart-tooltip__item strong {
+  font-weight: 700;
+}

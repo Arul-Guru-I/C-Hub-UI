@@ -1,0 +1,94 @@
+.users-table-wrapper {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.users-table thead tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.users-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.users-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.users-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
+.users-table tbody tr:hover {
+  background: var(--color-surface-2);
+}
+
+.users-row--editing td {
+  background: rgba(30, 58, 138, 0.06);
+}
+
+.users-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.users-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.users-email {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.users-github {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.users-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.users-icon-btn {
+  padding: 6px 8px !important;
+}
+
+.users-inline-input {
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  min-width: 120px;
+}

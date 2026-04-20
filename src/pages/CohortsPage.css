@@ -1,0 +1,49 @@
+.cohorts-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.cohorts-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.cohorts-sidebar {
+  min-width: 250px;
+  flex-shrink: 0;
+}
+
+.cohorts-sidebar .btn {
+  display: flex;
+  text-align: left;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.cohorts-sidebar .btn:hover {
+  background: var(--color-surface-2);
+}
+
+.cohorts-main {
+  flex: 1;
+}
+
+.stat-card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .cohorts-layout {
+    flex-direction: column;
+  }
+  .cohorts-sidebar {
+    width: 100%;
+  }
+}
