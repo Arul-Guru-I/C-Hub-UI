@@ -55,8 +55,23 @@ src/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- CHub backend running on `http://localhost:8000`
+
+| Service | Purpose | Default URL |
+|---|---|---|
+| Node.js 18+ | Run the frontend | — |
+| [CHub Backend](https://github.com/Arul-Guru-I/C-Hub) | REST API | `http://localhost:8000` |
+| MongoDB | User & content data | `mongodb://localhost:27017` |
+| [LM Studio](https://lmstudio.ai) | Local LLM inference (code review, MCQ, doubts, learning path) | `http://localhost:1234/v1` |
+| ChromaDB | Vector store for RAG (embedded in backend, no separate setup needed) | `./chroma_data/` |
+
+> The frontend itself only needs Node.js and the backend URL. LM Studio and ChromaDB are backend dependencies — see the [backend README](https://github.com/Arul-Guru-I/C-Hub) for setup instructions.
+
+#### LM Studio quick setup
+1. Download from **[lmstudio.ai](https://lmstudio.ai)**
+2. Load a model (recommended: **Qwen 3.5 9B Instruct**) and the **nomic-embed-text-v1.5** embedding model
+3. Go to **Developer → Start Server** (starts on port 1234 by default)
+
+Without LM Studio running, the backend will still serve all non-AI routes (auth, users, cohorts, attendance, forum). AI features (code review, tests, doubts, learning path) will return errors.
 
 ### Install & Run
 
