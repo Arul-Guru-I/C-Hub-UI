@@ -20,7 +20,7 @@ import {
   BarChartIcon,
   MonitorIcon,
 } from '../components/ui/Icons';
-import './TasksPage.css';
+import './ActivityPage.css';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -115,7 +115,7 @@ const ActivityPanel: React.FC<ActivityPanelProps> = ({ deviceId, onClose }) => {
     setLoading(true);
     setError('');
     try {
-      const res = await api.devices.getActivity(deviceId, limit);
+      const res = await api.openclaw.getActivity(deviceId, limit);
       setData(res);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load activity.');
@@ -224,7 +224,7 @@ const FilesPanel: React.FC<FilesPanelProps> = ({ deviceId, onClose }) => {
     setLoading(true);
     setError('');
     try {
-      const res = await api.devices.getFiles(deviceId);
+      const res = await api.openclaw.getFiles(deviceId);
       setData(res);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load files.');
@@ -330,7 +330,7 @@ const DevicesTab: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      setData(await api.devices.listDevices());
+      setData(await api.openclaw.listDevices());
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load devices.');
     } finally {
@@ -483,7 +483,7 @@ const SummaryTab: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      setData(await api.devices.getSummary());
+      setData(await api.openclaw.getSummary());
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load summary.');
     } finally {
@@ -571,7 +571,7 @@ const TABS: Tab[] = [
   { id: 'devices', icon: <MonitorIcon  size={14} />, label: 'Devices'   },
 ];
 
-const TasksPage: React.FC = () => {
+const ActivityPage: React.FC = () => {
   const [tab, setTab] = useState('summary');
 
   return (
@@ -589,4 +589,4 @@ const TasksPage: React.FC = () => {
   );
 };
 
-export default TasksPage;
+export default ActivityPage;

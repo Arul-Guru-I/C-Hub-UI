@@ -14,10 +14,10 @@ const UsersPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   
-  const [cohorts, setCohorts] = useState<string[]>([]);
+  const [cohorts, setCohorts] = useState<{ slug: string; name: string; icon: string }[]>([]);
   const [filterCohort, setFilterCohort] = useState<string>('all');
   const { user } = useAuth();
-  const isTrainer = user?.role === 'admin' || user?.role === 'reviewer';
+  const isTrainer = user?.role === 'trainer';
 
   const fetchUsers = async () => {
     try {
@@ -96,7 +96,7 @@ const UsersPage: React.FC = () => {
               style={{ background: 'var(--color-surface-2)', padding: '6px 12px' }}
             >
               <option value="all">All</option>
-              {cohorts.map(c => <option key={c} value={c}>{c}</option>)}
+              {cohorts.map(c => <option key={c.slug} value={c.slug}>{c.icon} {c.name}</option>)}
             </select>
           </div>
         )}
@@ -163,7 +163,7 @@ const UsersPage: React.FC = () => {
                           style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)' }}
                         >
                           <option value="">None</option>
-                          {cohorts.map(c => <option key={c} value={c}>{c}</option>)}
+                          {cohorts.map(c => <option key={c.slug} value={c.slug}>{c.icon} {c.name}</option>)}
                         </select>
                       ) : (
                         <span className="badge badge-accent">{u.cohort || 'None'}</span>
@@ -178,8 +178,7 @@ const UsersPage: React.FC = () => {
                           style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)' }}
                         >
                           <option value="user">user</option>
-                          <option value="admin">admin</option>
-                          <option value="reviewer">reviewer</option>
+                          <option value="trainer">trainer</option>
                         </select>
                       ) : (
                         <span className={`badge ${u.role === 'admin' ? 'badge-danger' : u.role === 'reviewer' ? 'badge-info' : 'badge-primary'}`}>

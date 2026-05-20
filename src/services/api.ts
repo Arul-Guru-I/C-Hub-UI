@@ -157,7 +157,7 @@ export const usersApi = {
     return response.data;
   },
   getAvailableCohorts: async () => {
-    const response = await apiClient.get<string[]>('/users/cohorts/available');
+    const response = await apiClient.get<{ slug: string; name: string; icon: string; duration_weeks?: number }[]>('/users/cohorts/available');
     return response.data;
   },
   getMe: async () => {
@@ -230,7 +230,7 @@ export interface CombinedFeedbackResponse {
   feedbacks: CombinedFeedbackEntry[];
 }
 
-export const feedbacksApi = {
+export const feedbackApi = {
   createFeedback: async (feedback: FeedbackCreate) => {
     const response = await apiClient.post<Feedback>('/feedbacks/', feedback);
     return response.data;
@@ -758,6 +758,15 @@ export interface GenerateQuestionsResponse {
 export interface LPCollection { topic: string; collection: string; document_count: number; }
 export interface LPCollectionsResponse { cohort_slug: string; collections: LPCollection[]; }
 
+export interface LPTopic {
+  slug: string;
+  name: string;
+  collection: string;
+  chunk_count: number;
+}
+export interface LPTopicsResponse { topics: LPTopic[]; }
+export interface LPLinkedTopicsResponse { cohort_slug: string; linked_topics: string[]; }
+
 export const learningPathApi = {
   listCohorts: async (): Promise<{ cohorts: LPCohort[] }> => {
     const r = await apiClient.get('/learning-path/cohorts');
@@ -809,6 +818,47 @@ export const learningPathApi = {
     const r = await apiClient.delete(`/learning-path/cohorts/${slug}/collections/${encodeURIComponent(topic)}`);
     return r.data;
   },
+
+  // Global topic library
+  listTopics: async (): Promise<LPTopicsResponse> => {
+    const r = await apiClient.get('/learning-path/topics');
+    return r.data;
+  },
+  topicIngestText: async (topic: string, content: string, source: string, replace: boolean) => {
+    const form = new FormData();
+    form.append('topic', topic);
+    form.append('content', content);
+    form.append('source', source);
+    form.append('replace', String(replace));
+    const r = await apiClient.post('/learning-path/topics/ingest', form, { headers: { 'Content-Type': undefined } });
+    return r.data as { topic: string; chunks_stored: number; replaced: boolean };
+  },
+  topicIngestFile: async (topic: string, file: File, replace: boolean) => {
+    const form = new FormData();
+    form.append('topic', topic);
+    form.append('file', file);
+    form.append('replace', String(replace));
+    const r = await apiClient.post('/learning-path/topics/ingest-file', form, { headers: { 'Content-Type': undefined } });
+    return r.data as { topic: string; chunks_stored: number; replaced: boolean };
+  },
+  deleteTopic: async (topicSlug: string) => {
+    const r = await apiClient.delete(`/learning-path/topics/${encodeURIComponent(topicSlug)}`);
+    return r.data;
+  },
+
+  // Cohort ↔ topic linking
+  getLinkedTopics: async (slug: string): Promise<LPLinkedTopicsResponse> => {
+    const r = await apiClient.get(`/learning-path/cohorts/${slug}/linked-topics`);
+    return r.data;
+  },
+  linkTopic: async (slug: string, topicSlug: string) => {
+    const r = await apiClient.post(`/learning-path/cohorts/${slug}/linked-topics/${encodeURIComponent(topicSlug)}`);
+    return r.data;
+  },
+  unlinkTopic: async (slug: string, topicSlug: string) => {
+    const r = await apiClient.delete(`/learning-path/cohorts/${slug}/linked-topics/${encodeURIComponent(topicSlug)}`);
+    return r.data;
+  },
 };
 
 // --- Doubts / Image Q&A ---
@@ -839,7 +889,7 @@ export const doubtsApi = {
   },
 };
 
-export const devicesApi = {
+export const openclawApi = {
   listDevices: async (): Promise<DevicesResponse> => {
     const response = await apiClient.get<DevicesResponse>('/openclaw/devices');
     return response.data;
@@ -900,19 +950,124 @@ export const cohortsApi = {
   },
 };
 
+// --- GitHub Org/Repo Browser ---
+
+export interface GithubRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string | null;
+  private: boolean;
+  html_url: string;
+  language: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  open_issues_count: number;
+  updated_at: string | null;
+  default_branch: string;
+}
+
+export interface GithubOrg {
+  login: string;
+  avatar_url: string | null;
+  description: string | null;
+  is_allowed: boolean;
+  repos_count: number;
+  repos: GithubRepo[];
+}
+
+export interface GithubOrgsResponse {
+  user: { login: string; name: string | null; avatar_url: string | null };
+  personal: { login: string; repos_count: number; repos: GithubRepo[] };
+  orgs: GithubOrg[];
+  allowed_orgs: string[];
+  total_orgs: number;
+  allowed_count: number;
+}
+
+export interface GithubSettings {
+  allowed_orgs: string[];
+}
+
+export interface GithubConfig {
+  tunnel_url: string;
+  webhook_url: string;
+  tunnel_from_env: boolean;
+}
+
+export interface OrgWebhookEntry {
+  id: number;
+  url: string;
+  active: boolean;
+  events: string[];
+  is_ours: boolean;
+  created_at: string | null;
+}
+
+export interface OrgWebhooksResponse {
+  org: string;
+  hooks: OrgWebhookEntry[];
+  our_hook: OrgWebhookEntry | null;
+  webhook_url: string;
+}
+
+export interface InstallWebhookResponse {
+  org: string;
+  hook_id: number;
+  webhook_url: string;
+  active: boolean;
+  already_existed: boolean;
+}
+
+export const githubApi = {
+  listOrgsAndRepos: async (): Promise<GithubOrgsResponse> => {
+    const r = await apiClient.get<GithubOrgsResponse>('/github/orgs');
+    return r.data;
+  },
+  getSettings: async (): Promise<GithubSettings> => {
+    const r = await apiClient.get<GithubSettings>('/github/settings');
+    return r.data;
+  },
+  updateAllowedOrgs: async (allowed_orgs: string[]): Promise<GithubSettings> => {
+    const r = await apiClient.put<GithubSettings>('/github/settings/allowed-orgs', { allowed_orgs });
+    return r.data;
+  },
+  getConfig: async (): Promise<GithubConfig> => {
+    const r = await apiClient.get<GithubConfig>('/github/config');
+    return r.data;
+  },
+  updateTunnelUrl: async (tunnel_url: string): Promise<{ tunnel_url: string; webhook_url: string }> => {
+    const r = await apiClient.put('/github/config/tunnel-url', { tunnel_url });
+    return r.data;
+  },
+  listOrgWebhooks: async (org: string): Promise<OrgWebhooksResponse> => {
+    const r = await apiClient.get<OrgWebhooksResponse>(`/github/orgs/${encodeURIComponent(org)}/webhooks`);
+    return r.data;
+  },
+  installOrgWebhook: async (org: string): Promise<InstallWebhookResponse> => {
+    const r = await apiClient.post<InstallWebhookResponse>(`/github/orgs/${encodeURIComponent(org)}/webhooks`);
+    return r.data;
+  },
+  removeOrgWebhook: async (org: string, hookId: number): Promise<{ deleted: boolean }> => {
+    const r = await apiClient.delete(`/github/orgs/${encodeURIComponent(org)}/webhooks/${hookId}`);
+    return r.data;
+  },
+};
+
 export default {
   apiClient,
   auth: authApi,
   users: usersApi,
   performance: performanceApi,
   forum: forumApi,
-  feedbacks: feedbacksApi,
+  feedback: feedbackApi,
   system: systemApi,
   tests: testsApi,
   attendance: attendanceApi,
-  devices: devicesApi,
+  openclaw: openclawApi,
   projectContent: projectContentApi,
   doubts: doubtsApi,
   learningPath: learningPathApi,
   cohorts: cohortsApi,
+  github: githubApi,
 };

@@ -117,6 +117,7 @@ const CohortsPage: React.FC = () => {
                   <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', fontWeight: 600 }}>
                     Students
                   </div>
+                  <div className="cohorts-table-wrap">
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--color-border)', textAlign: 'left', fontSize: '0.8rem', color: 'var(--color-text-sec)' }}>
@@ -140,7 +141,8 @@ const CohortsPage: React.FC = () => {
                       )}
                     </tbody>
                   </table>
-                </div>
+                  </div>{/* cohorts-table-wrap */}
+                </div>{/* card */}
 
               </div>
             ) : null}

@@ -10,7 +10,7 @@
 }
 
 .cohorts-sidebar {
-  min-width: 250px;
+  width: 240px;
   flex-shrink: 0;
 }
 
@@ -20,6 +20,7 @@
   border-radius: var(--radius-md);
   font-weight: 500;
   transition: all var(--transition-fast);
+  width: 100%;
 }
 
 .cohorts-sidebar .btn:hover {
@@ -28,6 +29,7 @@
 
 .cohorts-main {
   flex: 1;
+  min-width: 0;
 }
 
 .stat-card {
@@ -39,11 +41,97 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* Scrollable table on small screens */
+.cohorts-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tablet (≤ 900px) ── */
+@media (max-width: 900px) {
+  .cohorts-sidebar {
+    width: 200px;
+  }
+}
+
+/* ── Mobile (≤ 768px) ── */
 @media (max-width: 768px) {
   .cohorts-layout {
     flex-direction: column;
+    gap: 16px;
   }
+
   .cohorts-sidebar {
     width: 100%;
+    /* Switch from stacked buttons to horizontal scroll strip */
+    padding: 12px !important;
+  }
+
+  .cohorts-sidebar > h3 {
+    display: none;
+  }
+
+  /* Cohort buttons scroll horizontally on mobile */
+  .cohorts-sidebar > div {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cohorts-sidebar .btn {
+    flex-shrink: 0;
+    width: auto;
+    padding: 8px 14px !important;
+    font-size: 0.85rem;
+  }
+
+  .cohorts-sidebar .badge {
+    display: none;
+  }
+
+  /* Stats grid: 2 per row on mobile */
+  .cohorts-main > .anim-fade-up > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Tighten stat cards */
+  .stat-card {
+    padding: 14px !important;
+    gap: 6px !important;
+  }
+
+  .stat-card span:nth-child(2) {
+    font-size: 1.25rem !important;
+  }
+
+  /* Table: allow horizontal scroll */
+  .cohorts-main .card table {
+    min-width: 420px;
+  }
+
+  .cohorts-main .card > div:first-child {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+
+  table th,
+  table td {
+    padding: 10px 12px !important;
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Small mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+  .cohorts-main > .anim-fade-up > div:first-child {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .stat-card span:first-child {
+    display: none; /* hide icon on very small screens */
   }
 }

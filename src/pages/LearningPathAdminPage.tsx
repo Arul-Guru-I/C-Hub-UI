@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import api from '../services/api';
-import type { LPCohort, LPCohortDetail, LPAssessmentQuestion, LPCollection } from '../services/api';
-import { PlusIcon, TrashIcon, RefreshIcon, FileIcon } from '../components/ui/Icons';
-import './TrainerCurriculumPage.css';
+import type { LPCohort, LPCohortDetail, LPAssessmentQuestion } from '../services/api';
+import { PlusIcon, TrashIcon, RefreshIcon, FileIcon, TagIcon } from '../components/ui/Icons';
+import './LearningPathAdminPage.css';
 
-type Tab = 'cohorts' | 'content' | 'questions';
+type Tab = 'cohorts' | 'topics' | 'questions';
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
 const TabBtn: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
@@ -109,67 +109,197 @@ const CohortsTab: React.FC<{ cohorts: LPCohort[]; onRefresh: () => void }> = ({ 
   );
 };
 
-// ── Tab: Content (Knowledge Base) ─────────────────────────────────────────────
-const ContentTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
-  const [selSlug, setSelSlug] = useState(cohorts[0]?.slug || '');
-  const [topic, setTopic] = useState('');
-  const [textContent, setTextContent] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [mode, setMode] = useState<'text' | 'file'>('text');
-  const [collections, setCollections] = useState<LPCollection[]>([]);
-  const [loadingCols, setLoadingCols] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [deleting, setDeleting] = useState<string | null>(null);
-  const [msg, setMsg] = useState('');
-  const [error, setError] = useState('');
+// ── Tab: Topics (Global Topic Library + Cohort Linking) ──────────────────────
+const TopicsTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
 
-  const loadCollections = async (slug: string) => {
-    setLoadingCols(true);
-    try { const r = await api.learningPath.listCollections(slug); setCollections(r.collections); }
-    catch { setCollections([]); }
-    finally { setLoadingCols(false); }
+  // ── Library state ──
+  type LPTopicLocal = { slug: string; name: string; collection: string; chunk_count: number };
+  const [topics, setTopics] = useState<LPTopicLocal[]>([]);
+  const [loadingTopics, setLoadingTopics] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [formTopic, setFormTopic] = useState('');
+  const [formMode, setFormMode] = useState<'text' | 'file'>('text');
+  const [formContent, setFormContent] = useState('');
+  const [formFile, setFormFile] = useState<File | null>(null);
+  const [formReplace, setFormReplace] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [deletingTopic, setDeletingTopic] = useState<string | null>(null);
+  const [libMsg, setLibMsg] = useState('');
+  const [libErr, setLibErr] = useState('');
+
+  // ── Cohort-link state ──
+  const [selSlug, setSelSlug] = useState(cohorts[0]?.slug || '');
+  const [linkedSlugs, setLinkedSlugs] = useState<string[]>([]);
+  const [loadingLinks, setLoadingLinks] = useState(false);
+  const [linking, setLinking] = useState(false);
+  const [toLink, setToLink] = useState('');
+
+  const loadTopics = async () => {
+    setLoadingTopics(true);
+    try { const r = await api.learningPath.listTopics(); setTopics(r.topics); }
+    catch { setTopics([]); }
+    finally { setLoadingTopics(false); }
   };
 
-  useEffect(() => { if (selSlug) loadCollections(selSlug); }, [selSlug]);
+  const loadLinks = async (slug: string) => {
+    setLoadingLinks(true);
+    try { const r = await api.learningPath.getLinkedTopics(slug); setLinkedSlugs(r.linked_topics); }
+    catch { setLinkedSlugs([]); }
+    finally { setLoadingLinks(false); }
+  };
+
+  useEffect(() => { loadTopics(); }, []);
+  useEffect(() => { if (selSlug) loadLinks(selSlug); }, [selSlug]);
 
   const handleUpload = async () => {
-    if (!selSlug || !topic.trim()) { setError('Select a cohort and enter a topic'); return; }
-    setUploading(true); setError(''); setMsg('');
+    if (!formTopic.trim()) { setLibErr('Topic name is required'); return; }
+    setUploading(true); setLibErr(''); setLibMsg('');
     try {
-      if (mode === 'text') {
-        if (!textContent.trim()) { setError('Content is required'); setUploading(false); return; }
-        const r = await api.learningPath.ingestText(selSlug, topic, textContent);
-        setMsg(`Stored ${r.chunks_stored} chunks for "${topic}"`);
-        setTextContent('');
+      let r: { chunks_stored: number };
+      if (formMode === 'text') {
+        if (!formContent.trim()) { setLibErr('Content is required'); setUploading(false); return; }
+        r = await api.learningPath.topicIngestText(formTopic, formContent, 'manual', formReplace);
+        setFormContent('');
       } else {
-        if (!file) { setError('Select a file'); setUploading(false); return; }
-        const r = await api.learningPath.ingestFile(selSlug, topic, file);
-        setMsg(`Stored ${r.chunks_stored} chunks from "${file.name}"`);
-        setFile(null);
+        if (!formFile) { setLibErr('Choose a file'); setUploading(false); return; }
+        r = await api.learningPath.topicIngestFile(formTopic, formFile, formReplace);
+        setFormFile(null);
       }
-      setTopic('');
-      loadCollections(selSlug);
+      setLibMsg(`${formReplace ? 'Replaced' : 'Added'} ${r.chunks_stored} chunks for "${formTopic}"`);
+      setFormTopic(''); setFormReplace(false); setShowForm(false);
+      loadTopics();
     } catch (e: any) {
-      setError(e?.response?.data?.detail || 'Upload failed');
+      setLibErr(e?.response?.data?.detail || 'Upload failed');
     } finally { setUploading(false); }
   };
 
-  const handleDeleteCol = async (colTopic: string) => {
-    if (!confirm(`Delete all content for "${colTopic}"?`)) return;
-    setDeleting(colTopic);
-    try { await api.learningPath.deleteCollection(selSlug, colTopic); loadCollections(selSlug); }
-    catch { alert('Failed to delete'); }
-    finally { setDeleting(null); }
+  const handleDeleteTopic = async (slug: string, name: string) => {
+    if (!confirm(`Delete topic "${name}"? It will be unlinked from all cohorts.`)) return;
+    setDeletingTopic(slug);
+    try {
+      await api.learningPath.deleteTopic(slug);
+      setTopics(prev => prev.filter(t => t.slug !== slug));
+      setLinkedSlugs(prev => prev.filter(s => s !== slug));
+    } catch { alert('Failed to delete topic'); }
+    finally { setDeletingTopic(null); }
   };
+
+  const handleLink = async () => {
+    if (!toLink || linkedSlugs.includes(toLink)) return;
+    setLinking(true);
+    try {
+      await api.learningPath.linkTopic(selSlug, toLink);
+      setLinkedSlugs(prev => [...prev, toLink]);
+      setToLink('');
+    } catch { alert('Failed to link topic'); }
+    finally { setLinking(false); }
+  };
+
+  const handleUnlink = async (topicSlug: string) => {
+    try {
+      await api.learningPath.unlinkTopic(selSlug, topicSlug);
+      setLinkedSlugs(prev => prev.filter(s => s !== topicSlug));
+    } catch { alert('Failed to unlink topic'); }
+  };
+
+  const unlinkedTopics = topics.filter(t => !linkedSlugs.includes(t.slug));
 
   return (
     <div className="tc-section">
+
+      {/* ── Section 1: Global Topic Library ── */}
       <div className="tc-section-head">
-        <h2 className="tc-section-title">Knowledge Base</h2>
-        <p className="tc-section-sub">Upload curriculum content per topic. Used for RAG-grounded learning path generation.</p>
+        <div>
+          <h2 className="tc-section-title">Topic Library</h2>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button className="tc-icon-btn" onClick={loadTopics} title="Refresh"><RefreshIcon size={13} /></button>
+          <button className="tc-btn tc-btn--primary" onClick={() => { setShowForm(v => !v); setLibErr(''); setLibMsg(''); }}>
+            <PlusIcon size={13} /> New Topic
+          </button>
+        </div>
       </div>
 
-      {/* Cohort picker */}
+      {showForm && (
+        <div className="tc-form card">
+          <h3 className="tc-form-title">{formReplace ? 'Replace Topic Content' : 'Add Topic Content'}</h3>
+          {libErr && <div className="tc-error">{libErr}</div>}
+          {libMsg && <div className="tc-success">{libMsg}</div>}
+
+          <Field label="Topic Name" hint="e.g. Spring Boot, Docker, SQL Basics">
+            <input className="tc-input" placeholder="Topic name" value={formTopic} onChange={e => setFormTopic(e.target.value)} />
+          </Field>
+
+          <div className="tc-mode-toggle">
+            <button className={`tc-mode-btn ${formMode === 'text' ? 'tc-mode-btn--on' : ''}`} onClick={() => setFormMode('text')}>Paste Text</button>
+            <button className={`tc-mode-btn ${formMode === 'file' ? 'tc-mode-btn--on' : ''}`} onClick={() => setFormMode('file')}>Upload File</button>
+          </div>
+
+          {formMode === 'text' ? (
+            <Field label="Content">
+              <textarea className="tc-textarea" rows={6} value={formContent} onChange={e => setFormContent(e.target.value)} placeholder="Paste notes, documentation, or lecture content here…" />
+            </Field>
+          ) : (
+            <Field label="File" hint="PDF, MD, TXT, PY, Java, JS, TS">
+              <label className="tc-file-label">
+                <FileIcon size={14} /> {formFile ? formFile.name : 'Choose file…'}
+                <input type="file" accept=".pdf,.md,.txt,.py,.java,.js,.ts" style={{ display: 'none' }} onChange={e => setFormFile(e.target.files?.[0] || null)} />
+              </label>
+            </Field>
+          )}
+
+          <label className="tc-replace-toggle">
+            <input type="checkbox" checked={formReplace} onChange={e => setFormReplace(e.target.checked)} />
+            <span>Replace existing chunks</span>
+            <span className="tc-hint"> — clears old content first, then re-embeds</span>
+          </label>
+
+          <div className="tc-form-actions">
+            <button className="tc-btn tc-btn--ghost" onClick={() => setShowForm(false)}>Cancel</button>
+            <button className="tc-btn tc-btn--primary" onClick={handleUpload} disabled={uploading}>
+              {uploading ? 'Uploading…' : formReplace ? 'Replace & Chunk' : 'Upload & Chunk'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {libMsg && !showForm && <div className="tc-success" style={{ marginBottom: 12 }}>{libMsg}</div>}
+
+      <div className="tc-col-list">
+        {loadingTopics ? (
+          <p className="tc-empty">Loading…</p>
+        ) : topics.length === 0 ? (
+          <p className="tc-empty">No topics yet. Create your first one above.</p>
+        ) : (
+          topics.map(t => (
+            <div key={t.slug} className="tc-col-row">
+              <div className="tc-col-row__left">
+                <TagIcon size={13} color="var(--color-primary-light)" />
+                <span className="tc-col-row__name">{t.name}</span>
+                <span className="tc-col-row__count">{t.chunk_count} chunks</span>
+                <code style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{t.collection}</code>
+              </div>
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button className="tc-btn tc-btn--ghost tc-btn--sm" onClick={() => { setFormTopic(t.name); setFormReplace(true); setShowForm(true); setLibMsg(''); setLibErr(''); }}>
+                  Update
+                </button>
+                <button className="tc-btn tc-btn--danger-ghost tc-btn--sm" onClick={() => handleDeleteTopic(t.slug, t.name)} disabled={deletingTopic === t.slug}>
+                  <TrashIcon size={12} /> {deletingTopic === t.slug ? '…' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* ── Section 2: Cohort Links ── */}
+      <div className="tc-section-head" style={{ marginTop: 32 }}>
+        <div>
+          <h2 className="tc-section-title">Cohort Links</h2>
+          <p className="tc-section-sub">Choose which topics each cohort uses for RAG-grounded learning path generation.</p>
+        </div>
+      </div>
+
       <div className="tc-cohort-picker">
         {cohorts.map(c => (
           <button key={c.slug} className={`tc-cohort-pill ${selSlug === c.slug ? 'tc-cohort-pill--on' : ''}`} onClick={() => setSelSlug(c.slug)}>
@@ -179,76 +309,58 @@ const ContentTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
       </div>
 
       {selSlug && (
-        <>
-          {/* Upload form */}
-          <div className="tc-form card">
-            <h3 className="tc-form-title">Add Content</h3>
-            {error && <div className="tc-error">{error}</div>}
-            {msg && <div className="tc-success">{msg}</div>}
+        <div className="tc-form card">
+          <h3 className="tc-form-title" style={{ marginBottom: 12 }}>Linked Topics for this Cohort</h3>
 
-            <div className="tc-mode-toggle">
-              <button className={`tc-mode-btn ${mode === 'text' ? 'tc-mode-btn--on' : ''}`} onClick={() => setMode('text')}>Paste Text</button>
-              <button className={`tc-mode-btn ${mode === 'file' ? 'tc-mode-btn--on' : ''}`} onClick={() => setMode('file')}>Upload File</button>
-            </div>
-
-            <Field label="Topic Name" hint="e.g. Spring Boot, Docker, SQL Basics">
-              <input className="tc-input" placeholder="Topic name" value={topic} onChange={e => setTopic(e.target.value)} />
-            </Field>
-
-            {mode === 'text' ? (
-              <Field label="Content">
-                <textarea className="tc-textarea" rows={6} value={textContent} onChange={e => setTextContent(e.target.value)} placeholder="Paste notes, documentation, examples, or lecture content here…" />
-              </Field>
-            ) : (
-              <Field label="File" hint="PDF, MD, TXT, PY, Java, JS, TS">
-                <label className="tc-file-label">
-                  <FileIcon size={14} /> {file ? file.name : 'Choose file…'}
-                  <input type="file" accept=".pdf,.md,.txt,.py,.java,.js,.ts" style={{ display: 'none' }} onChange={e => setFile(e.target.files?.[0] || null)} />
-                </label>
-              </Field>
-            )}
-
-            <div className="tc-form-actions">
-              <button className="tc-btn tc-btn--primary" onClick={handleUpload} disabled={uploading}>
-                {uploading ? 'Uploading…' : 'Upload & Chunk'}
-              </button>
-            </div>
-          </div>
-
-          {/* Existing collections */}
-          <div className="tc-collections">
-            <div className="tc-collections-head">
-              <span className="tc-collections-title">Stored Collections</span>
-              <button className="tc-icon-btn" onClick={() => loadCollections(selSlug)} title="Refresh"><RefreshIcon size={13} /></button>
-            </div>
-            {loadingCols ? (
-              <p className="tc-empty">Loading…</p>
-            ) : collections.length === 0 ? (
-              <p className="tc-empty">No content uploaded yet for this cohort.</p>
-            ) : (
-              <div className="tc-col-list">
-                {collections.map(col => (
-                  <div key={col.collection} className="tc-col-row">
+          {loadingLinks ? (
+            <p className="tc-empty">Loading…</p>
+          ) : linkedSlugs.length === 0 ? (
+            <p className="tc-empty">No topics linked yet.</p>
+          ) : (
+            <div className="tc-col-list" style={{ marginBottom: 16 }}>
+              {linkedSlugs.map(slug => {
+                const t = topics.find(x => x.slug === slug);
+                return (
+                  <div key={slug} className="tc-col-row">
                     <div className="tc-col-row__left">
-                      <span className="tc-col-row__name">{col.topic}</span>
-                      <span className="tc-col-row__count">{col.document_count} chunks</span>
+                      <TagIcon size={13} color="var(--color-success)" />
+                      <span className="tc-col-row__name">{t?.name || slug}</span>
+                      {t && <span className="tc-col-row__count">{t.chunk_count} chunks</span>}
                     </div>
-                    <button className="tc-btn tc-btn--danger-ghost tc-btn--sm" onClick={() => handleDeleteCol(col.topic)} disabled={deleting === col.topic}>
-                      <TrashIcon size={12} /> {deleting === col.topic ? '…' : 'Delete'}
+                    <button className="tc-btn tc-btn--danger-ghost tc-btn--sm" onClick={() => handleUnlink(slug)}>
+                      Unlink
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select
+              className="tc-input"
+              value={toLink}
+              onChange={e => setToLink(e.target.value)}
+              style={{ flex: 1 }}
+              disabled={unlinkedTopics.length === 0}
+            >
+              <option value="">{unlinkedTopics.length === 0 ? 'All topics already linked' : 'Select a topic to link…'}</option>
+              {unlinkedTopics.map(t => (
+                <option key={t.slug} value={t.slug}>{t.name} ({t.chunk_count} chunks)</option>
+              ))}
+            </select>
+            <button className="tc-btn tc-btn--primary" onClick={handleLink} disabled={!toLink || linking}>
+              {linking ? 'Linking…' : 'Link'}
+            </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
 };
 
-// ── Tab: Questions ─────────────────────────────────────────────────────────────
-const QuestionsTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
+// ── Tab: Assessment Questions ─────────────────────────────────────────────────
+const AssessmentQuestionsTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
   const [selSlug, setSelSlug] = useState(cohorts[0]?.slug || '');
   const [cohortDetail, setCohortDetail] = useState<LPCohortDetail | null>(null);
   const [loading, setLoading] = useState(false);
@@ -404,7 +516,7 @@ const QuestionsTab: React.FC<{ cohorts: LPCohort[] }> = ({ cohorts }) => {
 };
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-const TrainerCurriculumPage: React.FC = () => {
+const LearningPathAdminPage: React.FC = () => {
   const [tab, setTab] = useState<Tab>('cohorts');
   const [cohorts, setCohorts] = useState<LPCohort[]>([]);
   const [loading, setLoading] = useState(true);
@@ -422,15 +534,15 @@ const TrainerCurriculumPage: React.FC = () => {
     <div className="tc-page">
       <div className="tc-header">
         <div>
-          <h1 className="tc-title">Trainer Portal</h1>
-          <p className="tc-sub">Manage cohorts, curriculum content, and assessment questions.</p>
+          <h1 className="tc-title">Learning Path Admin</h1>
+          <p className="tc-sub">Manage cohorts, LP knowledge base content, and assessment questions. Backed by <code>learning_path.py</code>.</p>
         </div>
         <button className="tc-icon-btn" onClick={loadCohorts} title="Refresh all"><RefreshIcon size={15} /></button>
       </div>
 
       <div className="tc-tabs">
         <TabBtn active={tab === 'cohorts'} onClick={() => setTab('cohorts')}>Cohorts</TabBtn>
-        <TabBtn active={tab === 'content'} onClick={() => setTab('content')}>Knowledge Base</TabBtn>
+        <TabBtn active={tab === 'topics'} onClick={() => setTab('topics')}>Topics</TabBtn>
         <TabBtn active={tab === 'questions'} onClick={() => setTab('questions')}>Assessment Questions</TabBtn>
       </div>
 
@@ -439,12 +551,12 @@ const TrainerCurriculumPage: React.FC = () => {
       ) : (
         <>
           {tab === 'cohorts' && <CohortsTab cohorts={cohorts} onRefresh={loadCohorts} />}
-          {tab === 'content' && <ContentTab cohorts={cohorts} />}
-          {tab === 'questions' && <QuestionsTab cohorts={cohorts} />}
+          {tab === 'topics' && <TopicsTab cohorts={cohorts} />}
+          {tab === 'questions' && <AssessmentQuestionsTab cohorts={cohorts} />}
         </>
       )}
     </div>
   );
 };
 
-export default TrainerCurriculumPage;
+export default LearningPathAdminPage;

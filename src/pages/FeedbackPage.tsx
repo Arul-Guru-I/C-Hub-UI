@@ -13,9 +13,9 @@ import type {
 } from '../services/api';
 import { PlusIcon } from '../components/ui/Icons';
 import PerformanceCharts from '../components/charts/PerformanceCharts';
-import './ReviewsPage.css';
+import './FeedbackPage.css';
 
-type ReviewTab = 'manual' | 'combined' | 'content';
+type FeedbackTab = 'manual' | 'combined' | 'content';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -41,12 +41,12 @@ const IngestError: React.FC<IngestErrorProps> = ({ message }) => (
 
 // ── Main Component ─────────────────────────────────────────────────────────
 
-const ReviewsPage: React.FC = () => {
+const FeedbackPage: React.FC = () => {
   const { user } = useAuth();
   const isTrainer = user?.role === 'trainer' || user?.role === 'admin';
 
   // ── Tab ──
-  const [activeTab, setActiveTab] = useState<ReviewTab>('manual');
+  const [activeTab, setActiveTab] = useState<FeedbackTab>('manual');
 
   // ── Manual Feedback tab ──
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
@@ -65,7 +65,7 @@ const ReviewsPage: React.FC = () => {
   const [combinedData, setCombinedData] = useState<CombinedFeedbackResponse | null>(null);
   const [isCombinedLoading, setIsCombinedLoading] = useState(false);
 
-  // ── Content Management tab ──
+  // ── Evaluation Content tab (project_content.py) ──
   const [collections, setCollections] = useState<ProjectCollection[]>([]);
   const [collectionsLoading, setCollectionsLoading] = useState(false);
   const [collectionsLoaded, setCollectionsLoaded] = useState(false);
@@ -90,13 +90,13 @@ const ReviewsPage: React.FC = () => {
       const idToUse = user._id || user.email;
       try {
         const [fbData, perfData] = await Promise.all([
-          api.feedbacks.listFeedback(idToUse),
+          api.feedback.listFeedback(idToUse),
           api.performance.getPerformance(idToUse),
         ]);
         setFeedbacks(Array.isArray(fbData) ? fbData : []);
         setPerfLogs(Array.isArray(perfData) ? perfData : []);
       } catch (err) {
-        console.error('Failed to fetch reviews data', err);
+        console.error('Failed to fetch feedback data', err);
       } finally {
         setIsLoading(false);
       }
@@ -133,7 +133,7 @@ const ReviewsPage: React.FC = () => {
       const idToUse = user._id || user.email;
       setIsCombinedLoading(true);
       try {
-        const data = await api.feedbacks.getCombinedFeedback(idToUse);
+        const data = await api.feedback.getCombinedFeedback(idToUse);
         setCombinedData(data);
       } catch (err) {
         console.error('Failed to fetch combined feedback', err);
@@ -233,7 +233,7 @@ const ReviewsPage: React.FC = () => {
     setIsSubmitting(true);
     setFormError('');
     try {
-      await api.feedbacks.createFeedback({
+      await api.feedback.createFeedback({
         user_id: fbTargetUserId,
         pr_number: parseInt(fbPrNumber, 10),
         content: fbContent,
@@ -273,8 +273,8 @@ const ReviewsPage: React.FC = () => {
     <div className="page-content reviews-page">
       <div className="page-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1>Code Feedback</h1>
-          <p>Review feedback received from reviewers based on your pulled code.</p>
+          <h1>Feedback</h1>
+          <p>Code review feedback from trainers and automated PR analysis. Backed by <code>feedback.py</code> + <code>project_content.py</code>.</p>
         </div>
         {isTrainer && activeTab === 'manual' && (
           <button className="btn btn-primary btn-sm" onClick={handleOpenForm}>
@@ -299,7 +299,7 @@ const ReviewsPage: React.FC = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════
-          Tab: Trainer Feedback (manual)
+          Tab: Trainer Feedback (manual) — feedback.py /feedbacks
       ══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'manual' && (
         <>
@@ -387,7 +387,7 @@ const ReviewsPage: React.FC = () => {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          Tab: PR Reviews (combined / automated)
+          Tab: PR Reviews (combined / automated) — feedback.py /feedbacks/combined
       ══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'combined' && (
         <>
@@ -473,7 +473,7 @@ const ReviewsPage: React.FC = () => {
       )}
 
       {/* ══════════════════════════════════════════════════════════════════
-          Tab: Evaluation Content (ChromaDB management — trainer only)
+          Tab: Evaluation Content — project_content.py /project-content
       ══════════════════════════════════════════════════════════════════ */}
       {activeTab === 'content' && isTrainer && (
         <div className="rv-content-tab">
@@ -639,4 +639,4 @@ const ReviewsPage: React.FC = () => {
   );
 };
 
-export default ReviewsPage;
+export default FeedbackPage;

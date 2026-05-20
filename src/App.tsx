@@ -1,10 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
-import TasksPage from './pages/TasksPage';
+import ActivityPage from './pages/ActivityPage';
 import TestsPage from './pages/TestsPage';
-import ReviewsPage from './pages/ReviewsPage';
 import ForumPage from './pages/ForumPage';
 import UsersPage from './pages/UsersPage';
 import AttendancePage from './pages/AttendancePage';
@@ -12,7 +11,8 @@ import DoubtsPage from './pages/DoubtsPage';
 import LearningPathPage from './pages/LearningPathPage';
 import AssessmentPage from './pages/AssessmentPage';
 import LearningPathResultPage from './pages/LearningPathResultPage';
-import TrainerCurriculumPage from './pages/TrainerCurriculumPage';
+import LearningPathAdminPage from './pages/LearningPathAdminPage';
+import GitHubPage from './pages/GitHubPage';
 import LoginPage from './pages/LoginPage';
 import CohortsPage from './pages/CohortsPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -29,9 +29,9 @@ const App: React.FC = () => {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="tasks" element={<TasksPage />} />
+              <Route path="activity" element={<ActivityPage />} />
               <Route path="tests" element={<TestsPage />} />
-              <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="feedback" element={<Navigate to="/github" replace />} />
               <Route path="forum" element={<ForumPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="cohorts" element={<CohortsPage />} />
@@ -40,7 +40,8 @@ const App: React.FC = () => {
               <Route path="learning-path" element={<LearningPathPage />} />
               <Route path="learning-path/assess/:cohortSlug" element={<AssessmentPage />} />
               <Route path="learning-path/result" element={<LearningPathResultPage />} />
-              <Route path="learning-path/trainer" element={<TrainerCurriculumPage />} />
+              <Route path="learning-path/trainer" element={<LearningPathAdminPage />} />
+              <Route path="github" element={<GitHubPage />} />
             </Route>
           </Route>
         </Routes>

@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import {
-  HomeIcon, TaskIcon, TestIcon, ReviewIcon, ForumIcon, UsersIcon,
+  HomeIcon, TaskIcon, TestIcon, ForumIcon, UsersIcon,
   LogoHexIcon, ChevronLeftIcon, ChevronRightIcon, UserIcon, LogOutIcon,
-  AttendanceIcon, DoubtIcon, MapIcon,
+  AttendanceIcon, DoubtIcon, MapIcon, BookOpenIcon, GithubIcon,
 } from '../ui/Icons';
 import './Sidebar.css';
 
@@ -15,14 +15,14 @@ interface SidebarProps {
 }
 
 const BASE_NAV = [
-  { path: '/',                Icon: HomeIcon,       label: 'Home'          },
-  { path: '/learning-path',   Icon: MapIcon,        label: 'Learning Path' },
-  { path: '/tasks',           Icon: TaskIcon,       label: 'Tasks'         },
-  { path: '/tests',           Icon: TestIcon,       label: 'Tests'         },
-  { path: '/doubts',          Icon: DoubtIcon,      label: 'Doubts'        },
-  { path: '/reviews',         Icon: ReviewIcon,     label: 'Reviews'       },
-  { path: '/forum',           Icon: ForumIcon,      label: 'Forum'         },
-  { path: '/attendance',      Icon: AttendanceIcon, label: 'Attendance'    },
+  { path: '/',               Icon: HomeIcon,       label: 'Home'          },
+  { path: '/learning-path',  Icon: MapIcon,        label: 'Learning Path' },
+  { path: '/activity',       Icon: TaskIcon,       label: 'Activity'      },
+  { path: '/tests',          Icon: TestIcon,       label: 'Tests'         },
+  { path: '/doubts',         Icon: DoubtIcon,      label: 'Doubts'        },
+  { path: '/github',         Icon: GithubIcon,     label: 'PR Reviews'    },
+  { path: '/forum',          Icon: ForumIcon,      label: 'Forum'         },
+  { path: '/attendance',     Icon: AttendanceIcon, label: 'Attendance'    },
 ];
 
 const labelVariants = {
@@ -46,9 +46,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
   const isTrainer = user?.role === 'trainer';
   const navItems = isTrainer
     ? [
-        ...BASE_NAV, 
+        ...BASE_NAV,
         { path: '/cohorts', Icon: UsersIcon, label: 'Cohorts Analytics' },
-        { path: '/users', Icon: UsersIcon, label: 'Users' }
+        { path: '/users', Icon: UsersIcon, label: 'Users' },
+        { path: '/learning-path/trainer', Icon: BookOpenIcon, label: 'LP Admin' },
       ]
     : BASE_NAV;
 
