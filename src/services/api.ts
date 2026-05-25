@@ -186,6 +186,10 @@ export const performanceApi = {
     const response = await apiClient.get<PerformanceLog[]>(`/performance/cohort/${slug}`);
     return response.data;
   },
+  getAllPerformances: async (skip: number = 0, limit: number = 100) => {
+    const response = await apiClient.get<PerformanceLog[]>('/performance/', { params: { skip, limit } });
+    return response.data;
+  },
 };
 
 export const forumApi = {
@@ -245,6 +249,10 @@ export const feedbackApi = {
   },
   getCohortFeedback: async (slug: string) => {
     const response = await apiClient.get<Feedback[]>(`/feedbacks/cohort/${slug}`);
+    return response.data;
+  },
+  getAllFeedbacks: async (skip: number = 0, limit: number = 100) => {
+    const response = await apiClient.get<Feedback[]>('/feedbacks/', { params: { skip, limit } });
     return response.data;
   },
 };

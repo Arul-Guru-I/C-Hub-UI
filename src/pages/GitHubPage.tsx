@@ -502,16 +502,9 @@ const GitHubPage: React.FC = () => {
     if (!user || !isTrainer) return;
     (async () => {
       try {
-        const allUsers = await api.users.listUsers(0, 100);
-        const results = await Promise.allSettled(
-          allUsers.filter(u => u._id && u._id !== user._id)
-            .map(u => api.performance.getPerformance(u._id!))
-        );
-        const combined: PerformanceLog[] = [];
-        for (const r of results) {
-          if (r.status === 'fulfilled' && Array.isArray(r.value)) combined.push(...r.value);
-        }
-        setCohortLogs(combined);
+        const logs = await api.performance.getAllPerformances(0, 500);
+        const filteredLogs = logs.filter(log => log.user_id !== user._id);
+        setCohortLogs(filteredLogs);
       } catch {}
     })();
   }, [user, isTrainer]);

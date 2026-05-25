@@ -108,17 +108,10 @@ const FeedbackPage: React.FC = () => {
     const fetchCohort = async () => {
       if (!user || !isTrainer) return;
       try {
-        const allUsers = await api.users.listUsers(0, 100);
-        const results = await Promise.allSettled(
-          allUsers
-            .filter(u => u._id && u._id !== user._id)
-            .map(u => api.performance.getPerformance(u._id!))
-        );
-        const combined: PerformanceLog[] = [];
-        for (const r of results) {
-          if (r.status === 'fulfilled' && Array.isArray(r.value)) combined.push(...r.value);
-        }
-        setCohortLogs(combined);
+        const logs = await api.performance.getAllPerformances(0, 500);
+        // Exclude trainer's own logs to match previous behavior
+        const filteredLogs = logs.filter(log => log.user_id !== user._id);
+        setCohortLogs(filteredLogs);
       } catch (err) {
         console.error('Failed to fetch cohort data', err);
       }
