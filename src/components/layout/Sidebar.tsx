@@ -23,6 +23,7 @@ const BASE_NAV = [
   { path: '/github',         Icon: GithubIcon,     label: 'PR Reviews'    },
   { path: '/forum',          Icon: ForumIcon,      label: 'Forum'         },
   { path: '/attendance',     Icon: AttendanceIcon, label: 'Attendance'    },
+  { path: '/arena',          Icon: MapIcon,        label: 'Arena'         },
 ];
 
 const labelVariants = {
@@ -50,8 +51,9 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, onToggle }) => {
         { path: '/cohorts', Icon: UsersIcon, label: 'Cohorts Analytics' },
         { path: '/users', Icon: UsersIcon, label: 'Users' },
         { path: '/learning-path/trainer', Icon: BookOpenIcon, label: 'LP Admin' },
+        { path: '/rag-manager', Icon: BookOpenIcon, label: 'RAG Manager' },
       ]
-    : BASE_NAV;
+    : BASE_NAV.filter(item => item.path !== '/activity');
 
   return (
     <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>

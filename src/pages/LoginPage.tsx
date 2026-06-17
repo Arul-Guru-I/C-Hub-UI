@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
@@ -10,11 +10,21 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [githubUsername, setGithubUsername] = useState('');
+  const [cohort, setCohort] = useState('');
+  const [availableCohorts, setAvailableCohorts] = useState<{ slug: string; name: string }[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isRegistering) {
+      api.users.getAvailableCohorts()
+        .then(data => setAvailableCohorts(data))
+        .catch(err => console.error('Failed to fetch cohorts', err));
+    }
+  }, [isRegistering]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +38,7 @@ const LoginPage: React.FC = () => {
           email,
           password,
           github_username: githubUsername || undefined,
+          cohort: cohort || undefined,
         });
         const tokenData = await api.auth.loginForAccessToken({ username: email, password });
         await login(tokenData.access_token);
@@ -84,6 +95,22 @@ const LoginPage: React.FC = () => {
                   className="form-input"
                   placeholder="octocat"
                 />
+              </div>
+              <div className="form-group anim-slide-in">
+                <label>Cohort <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>(optional)</span></label>
+                <select
+                  value={cohort}
+                  onChange={e => setCohort(e.target.value)}
+                  className="form-input"
+                  style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)' }}
+                >
+                  <option value="">Select a cohort...</option>
+                  {availableCohorts.map(c => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </>
           )}

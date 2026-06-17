@@ -15,6 +15,8 @@ import LearningPathAdminPage from './pages/LearningPathAdminPage';
 import GitHubPage from './pages/GitHubPage';
 import LoginPage from './pages/LoginPage';
 import CohortsPage from './pages/CohortsPage';
+import ArenaPage from './pages/ArenaPage';
+import RAGManagerPage from './pages/RAGManagerPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import './styles/index.css';
@@ -42,6 +44,9 @@ const App: React.FC = () => {
               <Route path="learning-path/result" element={<LearningPathResultPage />} />
               <Route path="learning-path/trainer" element={<LearningPathAdminPage />} />
               <Route path="github" element={<GitHubPage />} />
+              <Route path="arena" element={<ArenaPage />} />
+              <Route path="arena/:lobbyId" element={<ArenaPage />} />
+              <Route path="rag-manager" element={<RAGManagerPage />} />
             </Route>
           </Route>
         </Routes>

@@ -1062,6 +1062,115 @@ export const githubApi = {
   },
 };
 
+export const arenaApi = {
+  createLobby: async (data: { topics: string[]; board_size: number; dice_type: string; num_powerups: number }) => {
+    const response = await apiClient.post('/arena/create', data);
+    return response.data;
+  },
+  generatePool: async (lobbyId: string, difficulty: string, numQuestions: number, forceFresh: boolean = false) => {
+    const response = await apiClient.post(`/arena/${lobbyId}/pool/generate`, {
+      difficulty,
+      num_questions: numQuestions,
+      force_fresh: forceFresh
+    });
+    return response.data;
+  },
+  approvePool: async (lobbyId: string, questions: any[]) => {
+    const response = await apiClient.post(`/arena/${lobbyId}/pool/approve`, { questions });
+    return response.data;
+  },
+  startGame: async (lobbyId: string) => {
+    const response = await apiClient.post(`/arena/${lobbyId}/start`);
+    return response.data;
+  },
+  getRagCollections: async () => {
+    const response = await apiClient.get('/arena/rag/collections');
+    return response.data;
+  },
+  uploadRagFile: async (topic: string, file: File) => {
+    const formData = new FormData();
+    formData.append('topic', topic);
+    formData.append('file', file);
+    const response = await apiClient.post('/arena/rag/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  }
+};
+
+// --- RAG Manager Types ---
+
+export interface RAGCollection {
+  name: string;
+  category: string;
+  topic: string;
+  document_count: number;
+}
+
+export interface RAGCollectionsResponse {
+  collections: RAGCollection[];
+  total: number;
+}
+
+export interface RAGIngestResponse {
+  category: string;
+  topic: string;
+  cohort_slug?: string | null;
+  chunks_ingested: number;
+  message: string;
+}
+
+export interface RAGIngestFileResponse extends RAGIngestResponse {
+  filename: string;
+}
+
+export const ragManagerApi = {
+  listCollections: async (): Promise<RAGCollectionsResponse> => {
+    const response = await apiClient.get<RAGCollectionsResponse>('/rag/collections');
+    return response.data;
+  },
+  ingestText: async (
+    category: string,
+    topic: string,
+    content: string,
+    source?: string,
+    cohortSlug?: string
+  ): Promise<RAGIngestResponse> => {
+    const form = new FormData();
+    form.append('category', category);
+    form.append('topic', topic);
+    form.append('content', content);
+    if (source) form.append('source', source);
+    if (cohortSlug) form.append('cohort_slug', cohortSlug);
+    const response = await apiClient.post<RAGIngestResponse>('/rag/ingest', form, {
+      headers: { 'Content-Type': undefined },
+    });
+    return response.data;
+  },
+  ingestFile: async (
+    category: string,
+    topic: string,
+    file: File,
+    cohortSlug?: string
+  ): Promise<RAGIngestFileResponse> => {
+    const form = new FormData();
+    form.append('category', category);
+    form.append('topic', topic);
+    form.append('file', file);
+    if (cohortSlug) form.append('cohort_slug', cohortSlug);
+    const response = await apiClient.post<RAGIngestFileResponse>('/rag/ingest-file', form, {
+      headers: { 'Content-Type': undefined },
+    });
+    return response.data;
+  },
+  deleteCollection: async (name: string): Promise<{ collection: string; message: string }> => {
+    const response = await apiClient.delete<{ collection: string; message: string }>(
+      `/rag/collections/${encodeURIComponent(name)}`
+    );
+    return response.data;
+  },
+};
+
 export default {
   apiClient,
   auth: authApi,
@@ -1078,4 +1187,6 @@ export default {
   learningPath: learningPathApi,
   cohorts: cohortsApi,
   github: githubApi,
+  arena: arenaApi,
+  ragManager: ragManagerApi,
 };

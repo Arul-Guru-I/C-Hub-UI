@@ -1,0 +1,584 @@
+/* Arena.css */
+
+.arena-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  padding: 40px;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.arena-card {
+  width: 100%;
+  max-width: 960px;
+  background: rgba(22, 27, 34, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 48px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.arena-title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #4f8eff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.arena-subtitle {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+
+.arena-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.arena-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.arena-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.arena-label {
+  color: #a1a1aa;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.arena-input, .arena-select {
+  width: 100%;
+  background: rgba(15, 20, 25, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.arena-input:focus, .arena-select:focus {
+  border-color: #4f8eff;
+  box-shadow: 0 0 0 3px rgba(79, 142, 255, 0.2);
+}
+
+.arena-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 48px;
+}
+
+.arena-range-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.arena-range-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arena-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.arena-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  outline: none;
+}
+
+.arena-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #a855f7;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+  transition: transform 0.1s;
+}
+
+.arena-range::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.arena-toggle-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 20, 25, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arena-toggle-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.arena-toggle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.arena-toggle-hint {
+  color: #71717a;
+  font-size: 0.85rem;
+}
+
+.arena-switch {
+  width: 56px;
+  height: 32px;
+  border-radius: 32px;
+  padding: 4px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.arena-switch.active {
+  background-color: #22c55e;
+}
+
+.arena-switch.inactive {
+  background-color: #3f3f46;
+}
+
+.arena-switch-knob {
+  width: 24px;
+  height: 24px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.arena-switch.active .arena-switch-knob {
+  transform: translateX(24px);
+}
+
+.arena-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #fff;
+  border: none;
+  padding: 20px;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arena-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: all 0.5s ease;
+}
+
+.arena-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px rgba(37, 99, 235, 0.4);
+}
+
+.arena-btn:hover:not(:disabled)::after {
+  left: 100%;
+}
+
+.arena-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.arena-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* Lobby and Board Overrides */
+.arena-lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.arena-players-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.arena-player-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.arena-avatar {
+  width: 40px;
+  height: 40px;
+  background: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
+}
+
+.arena-dashboard-stat {
+  background: rgba(0,0,0,0.2);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 20px;
+}
+
+.arena-stat-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #4ade80;
+  margin-top: 8px;
+}
+
+.arena-board-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  background: rgba(15, 20, 25, 0.8);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.arena-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.arena-board-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 12px;
+}
+
+.arena-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.3);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.arena-tile-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  font-weight: bold;
+}
+
+.arena-zone-green { background: rgba(34, 197, 94, 0.15); border-color: rgba(34, 197, 94, 0.3); }
+.arena-zone-yellow { background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.3); }
+.arena-zone-red { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+.arena-tile-powerup { background: rgba(168, 85, 247, 0.2); border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+
+.arena-tokens {
+  position: absolute;
+  bottom: 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.arena-token {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.arena-controls {
+  padding: 32px;
+  background: rgba(0,0,0,0.4);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.arena-question-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 24px;
+  color: #bfdbfe;
+}
+
+.arena-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.arena-option-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arena-option-btn:not(:disabled):hover {
+  background: #2563eb;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.arena-option-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.arena-roll-btn {
+  background: linear-gradient(135deg, #eab308, #f97316);
+  color: #000;
+  border: none;
+  padding: 24px 64px;
+  border-radius: 100px;
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: 0 10px 30px rgba(234, 179, 8, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.arena-roll-btn:hover {
+  transform: scale(1.05);
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 24px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Topic Tags */
+.arena-topic-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(79, 142, 255, 0.15);
+  color: #93c5fd;
+  border: 1px solid rgba(79, 142, 255, 0.3);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.arena-topic-tag-remove {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  font-weight: bold;
+  transition: color 0.15s;
+}
+
+.arena-topic-tag-remove:hover {
+  color: #ef4444;
+}
+
+/* Collection Chips */
+.arena-collection-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  color: #d1d5db;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.arena-collection-chip:hover {
+  border-color: rgba(79, 142, 255, 0.4);
+  background: rgba(79, 142, 255, 0.08);
+}
+
+.arena-collection-chip.selected {
+  border-color: #4f8eff;
+  background: rgba(79, 142, 255, 0.15);
+  color: #93c5fd;
+  box-shadow: 0 0 12px rgba(79, 142, 255, 0.2);
+}
+
+/* Inline Spinner (for buttons and loading states) */
+.arena-spinner-inline {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-left-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Modal and Question Generation Select styles */
+.arena-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.arena-modal-content {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.99)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
+  animation: scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.arena-modal-title {
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.arena-gen-option {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.arena-gen-option:hover {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
